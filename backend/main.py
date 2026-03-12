@@ -1,3 +1,4 @@
+from tensorflow.keras.models import load_model
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -206,29 +207,33 @@ def predict_diabetes(data: DiabetesInput):
 # BRAIN TUMOR PREDICTION
 # ======================================================
 
+# ======================================================
+# BRAIN TUMOR PREDICTION
+# ======================================================
+
 @app.post("/predict-brain-tumor")
 async def predict_brain_tumor(
     patient_id: int = Form(...),
     file: UploadFile = File(...)
 ):
+    global brain_tumor_model
 
- MODEL_URL = "https://huggingface.co/jahnavi2645/medvision-brain-tumor-model/commit/b31858e2e20750a2e9c31a04a86c0eb38f8229e4"
-MODEL_PATH = "brain_tumor_model.h5"
+    MODEL_URL = "https://huggingface.co/jahnavi2645/medvision-brain-tumor-model/resolve/main/brain_tumor_model.h5"
+    MODEL_PATH = "brain_tumor_model.h5"
 
-if brain_tumor_model is None:
     try:
-        if not os.path.exists(MODEL_PATH):
-            print("Downloading brain tumor model from Hugging Face...")
-            r = requests.get(MODEL_URL)
-            with open(MODEL_PATH, "wb") as f:
-                f.write(r.content)
+        if brain_tumor_model is None:
+            if not os.path.exists(MODEL_PATH):
+                print("Downloading brain tumor model from Hugging Face...")
+                r = requests.get(MODEL_URL)
+                with open(MODEL_PATH, "wb") as f:
+                    f.write(r.content)
 
-        brain_tumor_model = load_model(MODEL_PATH)
-        print("Brain tumor model loaded successfully.")
+            brain_tumor_model = load_model(MODEL_PATH)
+            print("Brain tumor model loaded successfully.")
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to load AI model: {str(e)}")
-
 
     contents = await file.read()
 
@@ -268,7 +273,6 @@ if brain_tumor_model is None:
         "prediction": result,
         "confidence": confidence
     }
-
 # ======================================================
 # PREDICTIONS HISTORY
 # ======================================================
