@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pydantic
+joblib
+numpy
+tensorflow
+Pillow
+sqlalchemy
+psycopg2-binary
+python-multipart

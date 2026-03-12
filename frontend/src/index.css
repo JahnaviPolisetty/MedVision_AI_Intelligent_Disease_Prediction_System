@@ -1,0 +1,278 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --accent-blue: #2563eb;
+  --card-bg: rgba(255, 255, 255, 0.8);
+
+  /* Retain needed glowing or generic vars */
+  --primary: #2563eb; 
+  --primary-glow: rgba(37, 99, 235, 0.3);
+  --primary-neon: #60a5fa;
+  --accent: #22d3ee; 
+  --border-light: rgba(37, 99, 235, 0.2);
+  --danger: #ef4444; 
+  --success: #10b981; 
+}
+
+/* Dark Mode Variables */
+[data-theme='dark'], .dark-mode {
+  --bg-primary: #0f172a; /* User requested Background */
+  --bg-secondary: #1e293b;
+  --text-primary: #e2e8f0; /* User requested Text */
+  --text-secondary: #94a3b8;
+  --accent-blue: #2563eb; /* User requested Primary */
+  --card-bg: rgba(15, 23, 42, 0.7); /* User requested Card */
+
+  --primary: #2563eb; /* User requested Primary */
+  --primary-glow: rgba(37, 99, 235, 0.6);
+  --primary-neon: #60a5fa;
+  --accent: #22d3ee; /* User requested Accent */
+  --border-light: rgba(226, 232, 240, 0.1);
+  --success: #10b981; 
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+p {
+  color: var(--text-secondary);
+}
+
+.main-title {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+}
+
+[data-theme='light'] body {
+  background: var(--bg-primary);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+  background: var(--bg-panel);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  transition: background 0.5s ease, border-color 0.5s ease;
+}
+
+.glass-card {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(14, 165, 233, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, border-color 0.4s ease, background 0.3s ease, color 0.3s ease;
+}
+
+[data-theme='light'] .glass-card {
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  box-shadow: 0 8px 32px rgba(14, 165, 233, 0.05);
+}
+
+.glass-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: rgba(14, 165, 233, 0.4);
+  box-shadow: 0 15px 40px rgba(14, 165, 233, 0.15), 0 0 20px var(--primary-glow);
+}
+
+/* Glowing Elements */
+.glow-text {
+  background: var(--text-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+}
+
+.glow-border {
+  border: 1px solid var(--primary);
+  box-shadow: 0 0 15px var(--primary-glow), inset 0 0 10px var(--primary-glow);
+}
+
+/* Base Layout */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 280px; /* Sidebar width */
+  min-height: 100vh;
+  z-index: 10;
+}
+
+.page-content {
+  padding: 32px;
+  flex: 1;
+  margin-bottom: 60px; /* Space for footer */
+  padding-bottom: 80px;
+}
+
+/* Buttons */
+.btn-cyber {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-cyber::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(31, 109, 226, 0.4), transparent);
+  transition: all 0.5s ease;
+}
+
+.btn-cyber:hover {
+  background: rgba(31, 109, 226, 0.1);
+  box-shadow: 0 0 15px var(--primary-glow);
+}
+
+.btn-cyber:hover::before {
+  left: 100%;
+}
+
+.btn-cyber.primary {
+  background: var(--accent-blue);
+  color: #fff;
+  border: none;
+  box-shadow: 0 0 15px var(--primary-glow);
+}
+
+.btn-cyber.primary:hover {
+  background: var(--primary); /* Light adjustment on hover */
+  box-shadow: 0 0 25px var(--primary-glow);
+}
+
+/* Forms */
+.cyber-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-light);
+  color: var(--text-main);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  transition: all 0.3s ease;
+}
+
+[data-theme='light'] .cyber-input {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.cyber-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+/* Upload Area */
+.upload-area {
+  border: 2px dashed var(--border-light);
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='light'] .upload-area {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.upload-area:hover, .upload-area.active {
+  border-color: var(--primary);
+  background: rgba(31, 109, 226, 0.05);
+}
+
+.upload-icon {
+  font-size: 3rem;
+  color: var(--primary);
+  margin-bottom: 16px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 0;
+  }
+}

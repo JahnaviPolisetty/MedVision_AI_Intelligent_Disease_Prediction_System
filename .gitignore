@@ -1,0 +1,46 @@
+# Python environments
+venv/
+.venv/
+.venv-1/
+.venv-2/
+env/
+.env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Node
+node_modules/
+*/node_modules/
+
+# React build
+build/
+dist/
+*/build/
+*/dist/
+
+# datasets
+datasets/
+
+# AI models
+# Ensure we don't accidentally commit massive image datasets
+ai-models/**/*.jpeg
+ai-models/**/*.jpg
+ai-models/**/*.png
+ai-models/**/*.csv
+
+# Environment variables
+.env
+.env.*
+
+# logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+*.db
+*.h5
