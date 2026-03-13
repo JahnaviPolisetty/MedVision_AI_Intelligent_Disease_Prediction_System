@@ -14,7 +14,7 @@ const AppointmentHistory = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const API_URL = "https://medvision-ai-intelligent-disease-ugst.onrender.com";
+        const API_URL = "http://127.0.0.1:8000";
         const response = await fetch(`${API_URL}/appointments/${patientId}`);
         if (response.ok) {
           const data = await response.json();

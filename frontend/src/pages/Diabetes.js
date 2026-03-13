@@ -33,7 +33,7 @@ const Diabetes = () => {
     payload.patient_id = 1;
 
     try {
-      const API_URL = "https://medvision-ai-intelligent-disease-ugst.onrender.com";
+      const API_URL = "http://127.0.0.1:8000";
       const response = await fetch(`${API_URL}/predict-diabetes`, {
         method: "POST",
         headers: {

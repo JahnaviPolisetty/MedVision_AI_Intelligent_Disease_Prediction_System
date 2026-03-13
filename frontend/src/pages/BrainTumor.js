@@ -59,7 +59,7 @@ function BrainTumorPredictor() {
       setLoading(true);
 
       const response = await fetch(
-        "https://medvision-ai-intelligent-disease-ugst.onrender.com/predict-brain-tumor",
+        "http://127.0.0.1:8000/predict-brain-tumor",
         {
           method: "POST",
           body: formData

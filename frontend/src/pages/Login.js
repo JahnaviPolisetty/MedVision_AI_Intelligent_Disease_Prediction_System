@@ -42,7 +42,7 @@ const Login = () => {
       // Typically, modern FastAPI expects form-data for OAuth2PasswordRequestForm, 
       // but based on user prompt we send JSON to POST /login.
       // E.g '{"username": "admin1", "password": "admin123"}'
-      const API_URL = 'https://medvision-ai-intelligent-disease-ugst.onrender.com';
+      const API_URL = 'http://127.0.0.1:8000';
       const response = await fetch(`${API_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

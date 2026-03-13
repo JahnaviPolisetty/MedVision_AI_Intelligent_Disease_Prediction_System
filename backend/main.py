@@ -1,17 +1,14 @@
-from tensorflow.keras.models import load_model
-from fastapi import FastAPI, File, UploadFile, Form
+from keras.models import load_model
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import joblib
 import numpy as np
-import requests
-from fastapi import HTTPException
 from PIL import Image
 import io
-import json
+import os
 from sqlalchemy import text
 from database import SessionLocal
-
 
 app = FastAPI()
 
@@ -29,32 +26,30 @@ app.add_middleware(
 # -----------------------------
 # LOAD MODELS
 # -----------------------------
-import os
-
-# -----------------------------
-# LOAD MODELS
-# -----------------------------
 heart_model = None
 diabetes_model = None
 brain_tumor_model = None
 
 try:
-    if os.path.exists("../ai-models/heart_disease_model/heart_disease_model.pkl"):
-        heart_model = joblib.load("../ai-models/heart_disease_model/heart_disease_model.pkl")
-    if os.path.exists("../ai-models/diabetes_model/diabetes_model.pkl"):
-        diabetes_model = joblib.load("../ai-models/diabetes_model/diabetes_model.pkl")
-    # Brain tumor model loading deferred to endpoint to save memory
-    print("Models loaded successfully.")
+    heart_path = "../ai-models/heart_disease_model/heart_disease_model.pkl"
+    diabetes_path = "../ai-models/diabetes_model/diabetes_model.pkl"
+
+    if os.path.exists(heart_path):
+        heart_model = joblib.load(heart_path)
+
+    if os.path.exists(diabetes_path):
+        diabetes_model = joblib.load(diabetes_path)
+
+    print("Heart & Diabetes models loaded successfully.")
+
 except Exception as e:
-    print(f"Warning: Failed to load models. {e}")
+    print(f"Warning loading models: {e}")
 
 classes = ["glioma", "meningioma", "notumor", "pituitary"]
-
 
 @app.get("/")
 def home():
     return {"message": "AI Smart Hospital API Running"}
-
 
 # ======================================================
 # HEART DISEASE PREDICTION
@@ -79,24 +74,14 @@ class HeartDiseaseInput(BaseModel):
 
 @app.post("/predict-heart")
 def predict_heart_disease(data: HeartDiseaseInput):
-    if heart_model is None:
-        return {"error": "Heart disease model is not loaded. Please ensure the model file exists."}, 503
 
+    if heart_model is None:
+        raise HTTPException(status_code=500, detail="Heart model not loaded")
 
     input_data = np.array([
-        data.age,
-        data.sex,
-        data.cp,
-        data.trestbps,
-        data.chol,
-        data.fbs,
-        data.restecg,
-        data.thalach,
-        data.exang,
-        data.oldpeak,
-        data.slope,
-        data.ca,
-        data.thal
+        data.age, data.sex, data.cp, data.trestbps, data.chol,
+        data.fbs, data.restecg, data.thalach, data.exang,
+        data.oldpeak, data.slope, data.ca, data.thal
     ]).reshape(1, -1)
 
     prediction = heart_model.predict(input_data)[0]
@@ -104,28 +89,22 @@ def predict_heart_disease(data: HeartDiseaseInput):
 
     confidence = float(round(probability * 100, 2))
 
-    if prediction == 0:
-        result = "No Heart Disease Detected"
-    else:
-        result = "High Risk of Heart Disease"
+    result = "No Heart Disease Detected" if prediction == 0 else "High Risk of Heart Disease"
 
     db = SessionLocal()
 
     try:
-        db.execute(
-            text("""
-            INSERT INTO predictions 
-            (patient_id, disease_type, prediction_result, confidence)
-            VALUES (:pid, :dtype, :result, :conf)
-            """),
-            {
-                "pid": data.patient_id,
-                "dtype": "heart_disease",
-                "result": result,
-                "conf": confidence
-            }
-        )
+        db.execute(text("""
+        INSERT INTO predictions (patient_id, disease_type, prediction_result, confidence)
+        VALUES (:pid, :dtype, :result, :conf)
+        """), {
+            "pid": data.patient_id,
+            "dtype": "heart_disease",
+            "result": result,
+            "conf": confidence
+        })
         db.commit()
+
     finally:
         db.close()
 
@@ -133,7 +112,6 @@ def predict_heart_disease(data: HeartDiseaseInput):
         "prediction": result,
         "confidence_score": confidence
     }
-
 
 # ======================================================
 # DIABETES PREDICTION
@@ -153,19 +131,14 @@ class DiabetesInput(BaseModel):
 
 @app.post("/predict-diabetes")
 def predict_diabetes(data: DiabetesInput):
-    if diabetes_model is None:
-        return {"error": "Diabetes model is not loaded. Please ensure the model file exists."}, 503
 
+    if diabetes_model is None:
+        raise HTTPException(status_code=500, detail="Diabetes model not loaded")
 
     input_data = np.array([
-        data.pregnancies,
-        data.glucose,
-        data.bloodpressure,
-        data.skinthickness,
-        data.insulin,
-        data.bmi,
-        data.diabetespedigreefunction,
-        data.age
+        data.pregnancies, data.glucose, data.bloodpressure,
+        data.skinthickness, data.insulin, data.bmi,
+        data.diabetespedigreefunction, data.age
     ]).reshape(1, -1)
 
     prediction = diabetes_model.predict(input_data)[0]
@@ -173,27 +146,22 @@ def predict_diabetes(data: DiabetesInput):
 
     confidence = float(round(probability * 100, 2))
 
-    if prediction == 0:
-        result = "No Diabetes Detected"
-    else:
-        result = "High Risk of Diabetes"
+    result = "No Diabetes Detected" if prediction == 0 else "High Risk of Diabetes"
 
     db = SessionLocal()
+
     try:
-        db.execute(
-            text("""
-            INSERT INTO predictions 
-            (patient_id, disease_type, prediction_result, confidence)
-            VALUES (:pid, :dtype, :result, :conf)
-            """),
-            {
-                "pid": data.patient_id,
-                "dtype": "diabetes",
-                "result": result,
-                "conf": confidence
-            }
-        )
+        db.execute(text("""
+        INSERT INTO predictions (patient_id, disease_type, prediction_result, confidence)
+        VALUES (:pid, :dtype, :result, :conf)
+        """), {
+            "pid": data.patient_id,
+            "dtype": "diabetes",
+            "result": result,
+            "conf": confidence
+        })
         db.commit()
+
     finally:
         db.close()
 
@@ -202,45 +170,35 @@ def predict_diabetes(data: DiabetesInput):
         "confidence_score": confidence
     }
 
-
-# ======================================================
-# BRAIN TUMOR PREDICTION
-# ======================================================
-
 # ======================================================
 # BRAIN TUMOR PREDICTION
 # ======================================================
 
 @app.post("/predict-brain-tumor")
-async def predict_brain_tumor(
-    patient_id: int = Form(...),
-    file: UploadFile = File(...)
-):
+async def predict_brain_tumor(patient_id: int = Form(...), file: UploadFile = File(...)):
+
     global brain_tumor_model
 
-    MODEL_URL = "https://huggingface.co/jahnavi2645/medvision-brain-tumor-model/resolve/main/brain_tumor_model.h5"
-    MODEL_PATH = "brain_tumor_model.h5"
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    MODEL_PATH = os.path.join(BASE_DIR, "../ai-models/brain_tumor_model/brain_tumor_model.h5")
 
-    try:
-        if brain_tumor_model is None:
-            if not os.path.exists(MODEL_PATH):
-                print("Downloading brain tumor model from Hugging Face...")
-                r = requests.get(MODEL_URL)
-                with open(MODEL_PATH, "wb") as f:
-                    f.write(r.content)
+    if brain_tumor_model is None:
+        if not os.path.exists(MODEL_PATH):
+            raise HTTPException(status_code=500, detail=f"Model not found at {MODEL_PATH}")
 
-            brain_tumor_model = load_model(MODEL_PATH)
-            print("Brain tumor model loaded successfully.")
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to load AI model: {str(e)}")
+        brain_tumor_model = load_model(MODEL_PATH)
+        print("Brain tumor model loaded")
 
     contents = await file.read()
 
-    img = Image.open(io.BytesIO(contents)).convert("RGB")
+    try:
+        img = Image.open(io.BytesIO(contents)).convert("RGB")
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid image")
+
     img = img.resize((224, 224))
 
-    img_array = np.array(img) / 255.0
+    img_array = np.array(img).astype("float32") / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
     prediction = brain_tumor_model.predict(img_array)
@@ -250,67 +208,13 @@ async def predict_brain_tumor(
 
     result = classes[index]
 
-    db = SessionLocal()
-    try:
-        db.execute(
-            text("""
-            INSERT INTO predictions 
-            (patient_id, disease_type, prediction_result, confidence)
-            VALUES (:pid, :dtype, :result, :conf)
-            """),
-            {
-                "pid": patient_id,
-                "dtype": "brain_tumor",
-                "result": result,
-                "conf": confidence
-            }
-        )
-        db.commit()
-    finally:
-        db.close()
-
     return {
         "prediction": result,
         "confidence": confidence
     }
 # ======================================================
-# PREDICTIONS HISTORY
-# ======================================================
-
-@app.get("/predictions")
-def get_predictions():
-    db = SessionLocal()
-    try:
-        # Assuming predictions table has id, patient_id, disease_type, prediction_result, confidence
-        # Checking if created_at exists, if so we order by it. But basic order by id desc is safer.
-        result = db.execute(
-            text("""
-            SELECT id, patient_id, disease_type, prediction_result, confidence
-            FROM predictions
-            ORDER BY id DESC
-            """)
-        ).fetchall()
-        
-        predictions = []
-        for row in result:
-            predictions.append({
-                "id": row[0],
-                "patient_id": row[1],
-                "disease_type": row[2],
-                "prediction_result": row[3],
-                "confidence": float(row[4]) if row[4] is not None else None
-            })
-    finally:
-        db.close()
-    
-    return predictions
-
-
-# ======================================================
 # LOGIN SYSTEM
 # ======================================================
-
-from fastapi import HTTPException
 
 class LoginInput(BaseModel):
     username: str
@@ -318,30 +222,68 @@ class LoginInput(BaseModel):
 
 @app.post("/login")
 def login(data: LoginInput):
+
     db = SessionLocal()
+
     try:
         result = db.execute(
             text("""
-            SELECT id, username, role FROM users 
-            WHERE username = :user AND password = :pass
+            SELECT id, username, role
+            FROM users
+            WHERE username = :username AND password = :password
             """),
-            {"user": data.username, "pass": data.password}
+            {
+                "username": data.username,
+                "password": data.password
+            }
         ).fetchone()
 
         if not result:
             raise HTTPException(status_code=401, detail="Invalid username or password")
-        
+
         return {
             "message": "Login successful",
-            "username": result[1],
-            "role": result[2]
+            "username": result.username,
+            "role": result.role
         }
+
+    finally:
+        db.close()
+# ======================================================
+# PREDICTIONS HISTORY
+# ======================================================
+
+@app.get("/predictions")
+def get_predictions():
+    db = SessionLocal()
+
+    try:
+        result = db.execute(
+            text("""
+            SELECT id, patient_id, disease_type, prediction_result, confidence
+            FROM predictions
+            ORDER BY id DESC
+            """)
+        ).fetchall()
+
+        predictions = []
+
+        for row in result:
+            predictions.append({
+                "id": row[0],
+                "patient_id": row[1],
+                "disease_type": row[2],
+                "prediction_result": row[3],
+                "confidence": float(row[4]) if row[4] else None
+            })
+
+        return predictions
+
     finally:
         db.close()
 
-
 # ======================================================
-# APPOINTMENT BOOKING
+# APPOINTMENTS
 # ======================================================
 
 class AppointmentInput(BaseModel):
@@ -350,13 +292,17 @@ class AppointmentInput(BaseModel):
     appointment_date: str
     appointment_time: str
 
+
 @app.post("/book-appointment")
 def book_appointment(data: AppointmentInput):
+
     db = SessionLocal()
+
     try:
         db.execute(
             text("""
-            INSERT INTO appointments (patient_id, doctor_name, appointment_date, appointment_time, status)
+            INSERT INTO appointments
+            (patient_id, doctor_name, appointment_date, appointment_time, status)
             VALUES (:pid, :doc, :date, :time, 'Scheduled')
             """),
             {
@@ -366,16 +312,20 @@ def book_appointment(data: AppointmentInput):
                 "time": data.appointment_time
             }
         )
+
         db.commit()
+
+        return {"message": "Appointment booked successfully"}
+
     finally:
         db.close()
-    
-    return {"message": "Appointment booked successfully"}
 
 
 @app.get("/appointments/{patient_id}")
 def get_appointments(patient_id: int):
+
     db = SessionLocal()
+
     try:
         result = db.execute(
             text("""
@@ -386,8 +336,9 @@ def get_appointments(patient_id: int):
             """),
             {"pid": patient_id}
         ).fetchall()
-        
+
         appointments = []
+
         for row in result:
             appointments.append({
                 "id": row[0],
@@ -397,7 +348,8 @@ def get_appointments(patient_id: int):
                 "appointment_time": str(row[4]),
                 "status": row[5]
             })
+
+        return appointments
+
     finally:
         db.close()
-    
-    return appointments
