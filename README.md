@@ -1,99 +1,262 @@
-# 🏥 MedVision AI: Intelligent Disease Prediction System
+### 🏥 MedVision AI – Intelligent Disease Prediction System 
 
-![MedVision AI Banner](https://img.shields.io/badge/MedVision-AI_Healthcare-2563eb?style=for-the-badge&logo=health)
+MedVision AI is a full-stack AI-powered Smart Hospital platform that assists in diagnosing critical diseases such as Heart Disease, Diabetes, and Brain Tumors using Machine Learning models.
 
-MedVision AI is a comprehensive, modern Smart Hospital Dashboard that leverages Artificial Intelligence to assist in diagnosing critical conditions such as **Heart Disease, Diabetes, and Brain Tumors**. It features a robust FastAPI backend for serving machine learning models and a beautiful, interactive React frontend complete with 3D medical visualizations.
+The platform combines FastAPI, PostgreSQL, Machine Learning models, and a modern React dashboard with 3D medical visualizations to provide intelligent healthcare assistance.
 
-## ✨ Key Features
+### 🚀 Features
+## 🧠 AI Disease Prediction
 
-*   🧠 **Brain Tumor Detection**: Upload MRI scans for AI-driven classification (Glioma, Meningioma, Pituitary, or No Tumor) using a custom Convolutional Neural Network (CNN). Includes interactive 3D brain models.
-*   🫀 **Heart Disease Risk Scoring**: Predicts the likelihood of heart disease based on clinical metrics (age, cholesterol, ECG, etc.) using a trained ensemble model. Features animated biometric visualizations.
-*   🩸 **Diabetes Prediction**: Assesses diabetes risk using patient health data (BMI, glucose, insulin, etc.) with high accuracy.
-*   📅 **Smart Appointments**: Integrated system for booking and managing patient appointments with specialists.
-*   📊 **Interactive Dashboard**: Modern, responsive UI with real-time statistics, prediction history tracking, and dark/light mode optimization.
-*   🏥 **3D Medical Visualizations**: Immersive patient experience powered by Three.js and React Three Fiber.
+The system predicts multiple diseases using trained machine learning models.
 
-## 🛠️ Technology Stack
+##Brain Tumor Detection
+MRI scan classification using a CNN model built with TensorFlow/Keras
 
-### Backend (AI & API)
-*   **Framework**: FastAPI (Python)
-*   **Machine Learning**: TensorFlow/Keras (CNNs), Scikit-Learn (Random Forests, XGBoost)
-*   **Database**: PostgreSQL
-*   **Data Processing**: NumPy, Pandas, Pillow (PIL)
+##Heart Disease Prediction
+Predicts heart disease risk using clinical parameters
 
-### Frontend (UI & Visualization)
-*   **Framework**: React.js
-*   **3D Graphics**: Three.js, React Three Fiber, React Three Drei
-*   **Animations**: Framer Motion, Lottie React, tsparticles
-*   **State & Routing**: React Router DOM, Axios
-*   **Styling**: Pure CSS / Custom Design System
+##Diabetes Prediction
+Predicts diabetes likelihood based on patient health metrics
 
-## 🚀 Getting Started
+Users can input medical data or upload medical images to receive predictions.
 
-### Prerequisites
-*   Node.js (v16+)
-*   Python (3.9+)
-*   PostgreSQL
-*   Git
+## 📅 Appointment Management
 
-### 1. Backend Setup
+The system allows patients and hospital staff to manage appointments.
 
-```bash
-# Clone the repository
-git clone https://github.com/JahnaviPolisetty/MedVision_AI_Intelligent_Disease_Prediction_System.git
-cd "MedVision_AI_Intelligent_Disease_Prediction_System/backend"
+## Features include:
 
-# Create a virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+Book doctor appointments
 
-# Install dependencies (assuming a requirements.txt exists or install manually)
-pip install fastapi uvicorn tensorflow scikit-learn pandas numpy pillow sqlalchemy psycopg2-binary joblib python-multipart
+View appointment history
 
-# Run the API server
-uvicorn main:app --reload
-```
-*The backend API will be available at `http://localhost:8000`*
+Track appointment status
 
-### 2. Frontend Setup
+Manage doctor scheduling
 
-```bash
-# Open a new terminal and navigate to the frontend directory
-cd "../frontend"
+## 📊 Prediction History
 
-# Install dependencies
-npm install
+All predictions are stored in the database and can be retrieved later.
 
-# Start the React development server
-npm start
-```
-*The frontend application will be available at `http://localhost:3000`*
+## Features include:
 
-## 📂 Project Structure
+View previous predictions
 
-```
+Track predictions per patient
+
+Analyze prediction outcomes
+
+## 🔐 User Login System
+
+The platform includes a login system with different roles.
+
+# Example Users
+Username	Password	Role
+admin1	admin123	Admin
+doctor1	doctor123	Doctor
+reception1	recep123	Receptionist
+## 🏗 System Architecture
+Frontend (React Dashboard)
+        ↓
+FastAPI Backend
+        ↓
+Machine Learning Models
+        ↓
+PostgreSQL Database
+## 🛠 Technology Stack
+Backend (AI & API)
+
+Framework: FastAPI (Python)
+
+Machine Learning: TensorFlow / Keras, Scikit-Learn
+
+Database: PostgreSQL
+
+ORM: SQLAlchemy
+
+Data Processing: NumPy, Pandas, Pillow
+
+Frontend (UI & Visualization)
+
+Framework: React.js
+
+3D Graphics: Three.js, React Three Fiber
+
+Animations: Framer Motion, Lottie, tsparticles
+
+HTTP Requests: Axios
+
+Routing: React Router DOM
+
+Styling: CSS / Custom Design System
+
+## 🧠 Machine Learning Models
+Model	Algorithm
+Brain Tumor Detection	CNN (TensorFlow / Keras)
+Heart Disease Prediction	Logistic Regression / ML Model
+Diabetes Prediction	Classification Model
+# ✨ Key Features
+
+# 🧠 Brain Tumor detection from MRI images
+
+# 🫀 Heart disease risk prediction
+
+# 🩸 Diabetes prediction using clinical data
+
+# 📅 Smart hospital appointment booking
+
+# 📊 Prediction history tracking
+
+# 🏥 Interactive healthcare dashboard
+
+# 🌐 Full stack architecture
+
+# 🎨 3D medical visualizations with Three.js
+
+# 🌙 Dark/Light mode optimized UI
+
+### 📂 Project Structure
 MedVision_AI/
 │
 ├── backend/                # FastAPI application
-│   ├── main.py             # Main API endpoints and ML model integration
-│   ├── database.py         # PostgreSQL database connection
-│   └── ...
+│   ├── main.py             # API endpoints & ML integration
+│   ├── database.py         # PostgreSQL connection
+│   └── requirements.txt
 │
-├── frontend/               # React application
+├── frontend/               # React dashboard
 │   ├── src/
-│   │   ├── components/     # Reusable UI features (Navbar, MedicalScanner, 3D Models)
-│   │   ├── pages/          # Application views (Dashboard, Predictions, Appointments)
+│   │   ├── components/
+│   │   ├── pages/
 │   │   └── ...
-│   └── public/             # Static assets including .glb 3D models
+│   └── public/
 │
-├── ai-models/              # Trained ML weights and scalers (Ignored in Git)
+├── ai-models/              # Trained ML models
 │   ├── brain_tumor_model/
-│   ├── diabetes_model/
-│   └── heart_disease_model/
+│   ├── heart_disease_model/
+│   └── diabetes_model/
 │
-└── datasets/               # Training data (Ignored in Git)
-```
+├── datasets/               # Training datasets
+│
+└── README.md
+### ⚙ Installation & Setup
+1️⃣ Clone the Repository
+git clone https://github.com/JahnaviPolisetty/MedVision_AI_Intelligent_Disease_Prediction_System.git
+cd MedVision_AI_Intelligent_Disease_Prediction_System
+🔧 Backend Setup
 
-## 📜 License
+Navigate to backend folder:
 
-This project is proprietary. All rights reserved.
+cd backend
+
+Create virtual environment:
+
+python -m venv venv
+
+Activate environment:
+
+Windows:
+
+venv\Scripts\activate
+
+Linux / Mac:
+
+source venv/bin/activate
+
+Install dependencies:
+
+pip install fastapi uvicorn tensorflow scikit-learn pandas numpy pillow sqlalchemy psycopg2-binary joblib python-multipart
+
+Run backend server:
+
+uvicorn main:app --reload
+
+Backend will run at:
+
+http://localhost:8000
+
+Swagger API docs:
+
+http://localhost:8000/docs
+## 🌐 Frontend Setup
+
+Open a new terminal:
+
+cd frontend
+
+Install dependencies:
+
+npm install
+
+Run frontend:
+
+npm start
+
+Frontend runs at:
+
+http://localhost:3000
+## 🗄 Database Setup
+
+Create PostgreSQL database:
+
+ai_smart_hospital
+
+Create tables:
+
+users
+
+predictions
+
+appointments
+
+## 📡 API Endpoints
+Authentication
+POST /login
+Disease Prediction
+POST /predict-heart
+POST /predict-diabetes
+POST /predict-brain-tumor
+Prediction History
+GET /predictions
+Appointment Management
+POST /book-appointment
+GET /appointments/{patient_id}
+## 📊 Example Workflow
+
+User logs into the system
+
+Inputs medical data or uploads MRI image
+
+AI model predicts disease risk
+
+Prediction is stored in database
+
+User books doctor appointment
+
+Appointment history is tracked
+
+## 🔮 Future Improvements
+
+Cloud deployment (AWS / Render / GCP)
+
+Secure authentication using JWT
+
+Doctor availability scheduling
+
+Patient dashboard
+
+More AI diagnostic models
+
+Real-time hospital analytics
+
+## 👨‍💻 Author
+
+Jahnavi Polisetty
+B.Tech Computer Science Engineering
+
+Project: AI Smart Hospital – Intelligent Disease Prediction System
+
+## ⭐ Support
+
+If you like this project:
+
+⭐ Star the repository on GitHub
